@@ -3,18 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81449244F363BCB68AB3C633 /* Pods_signChecker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F3C12A75494708377192CF5 /* Pods_signChecker.framework */; };
 		E60F7193254D2DEF00DBDDFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F7192254D2DEF00DBDDFD /* AppDelegate.swift */; };
 		E60F7195254D2DEF00DBDDFD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F7194254D2DEF00DBDDFD /* SceneDelegate.swift */; };
 		E60F7197254D2DEF00DBDDFD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F7196254D2DEF00DBDDFD /* ViewController.swift */; };
 		E60F719C254D2DF200DBDDFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E60F719B254D2DF200DBDDFD /* Assets.xcassets */; };
 		E60F719F254D2DF200DBDDFD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E60F719D254D2DF200DBDDFD /* LaunchScreen.storyboard */; };
+		E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4F3C12A75494708377192CF5 /* Pods_signChecker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_signChecker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E60F718F254D2DEF00DBDDFD /* signChecker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = signChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E60F7192254D2DEF00DBDDFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E60F7194254D2DEF00DBDDFD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -22,6 +25,9 @@
 		E60F719B254D2DF200DBDDFD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E60F719E254D2DF200DBDDFD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E60F71A0254D2DF200DBDDFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Extension.swift"; sourceTree = "<group>"; };
+		EBAB0DE53189A41F8141B7FF /* Pods-signChecker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.debug.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.debug.xcconfig"; sourceTree = "<group>"; };
+		EC0AE45B524C1F08A5161424 /* Pods-signChecker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.release.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +35,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81449244F363BCB68AB3C633 /* Pods_signChecker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18E9F9EA82AB1D80762D89F1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F3C12A75494708377192CF5 /* Pods_signChecker.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5D23D637B9CCC9622D54591D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EBAB0DE53189A41F8141B7FF /* Pods-signChecker.debug.xcconfig */,
+				EC0AE45B524C1F08A5161424 /* Pods-signChecker.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		E60F7186254D2DEF00DBDDFD = {
 			isa = PBXGroup;
 			children = (
 				E60F7191254D2DEF00DBDDFD /* signChecker */,
 				E60F7190254D2DEF00DBDDFD /* Products */,
+				5D23D637B9CCC9622D54591D /* Pods */,
+				18E9F9EA82AB1D80762D89F1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,14 +80,47 @@
 		E60F7191254D2DEF00DBDDFD /* signChecker */ = {
 			isa = PBXGroup;
 			children = (
+				E60F71A9254D7B1400DBDDFD /* view */,
+				E60F71A8254D7AFB00DBDDFD /* resources */,
+				E60F71A7254D7AEB00DBDDFD /* main */,
+				E60F71A6254D7ACE00DBDDFD /* controller */,
+			);
+			path = signChecker;
+			sourceTree = "<group>";
+		};
+		E60F71A6254D7ACE00DBDDFD /* controller */ = {
+			isa = PBXGroup;
+			children = (
+				E60F7196254D2DEF00DBDDFD /* ViewController.swift */,
+			);
+			path = controller;
+			sourceTree = "<group>";
+		};
+		E60F71A7254D7AEB00DBDDFD /* main */ = {
+			isa = PBXGroup;
+			children = (
 				E60F7192254D2DEF00DBDDFD /* AppDelegate.swift */,
 				E60F7194254D2DEF00DBDDFD /* SceneDelegate.swift */,
-				E60F7196254D2DEF00DBDDFD /* ViewController.swift */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		E60F71A8254D7AFB00DBDDFD /* resources */ = {
+			isa = PBXGroup;
+			children = (
 				E60F719B254D2DF200DBDDFD /* Assets.xcassets */,
 				E60F719D254D2DF200DBDDFD /* LaunchScreen.storyboard */,
 				E60F71A0254D2DF200DBDDFD /* Info.plist */,
 			);
-			path = signChecker;
+			path = resources;
+			sourceTree = "<group>";
+		};
+		E60F71A9254D7B1400DBDDFD /* view */ = {
+			isa = PBXGroup;
+			children = (
+				E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */,
+			);
+			path = view;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,9 +130,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E60F71A3254D2DF200DBDDFD /* Build configuration list for PBXNativeTarget "signChecker" */;
 			buildPhases = (
+				85B03BF663D08D6725FC198C /* [CP] Check Pods Manifest.lock */,
 				E60F718B254D2DEF00DBDDFD /* Sources */,
 				E60F718C254D2DEF00DBDDFD /* Frameworks */,
 				E60F718D254D2DEF00DBDDFD /* Resources */,
+				87D69DE16066ECDF921646DC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -129,11 +190,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		85B03BF663D08D6725FC198C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-signChecker-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		87D69DE16066ECDF921646DC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-signChecker/Pods-signChecker-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-signChecker/Pods-signChecker-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-signChecker/Pods-signChecker-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E60F718B254D2DEF00DBDDFD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */,
 				E60F7197254D2DEF00DBDDFD /* ViewController.swift in Sources */,
 				E60F7193254D2DEF00DBDDFD /* AppDelegate.swift in Sources */,
 				E60F7195254D2DEF00DBDDFD /* SceneDelegate.swift in Sources */,
@@ -143,14 +247,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		E60F7198254D2DEF00DBDDFD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E60F7199254D2DEF00DBDDFD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		E60F719D254D2DF200DBDDFD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -278,11 +374,12 @@
 		};
 		E60F71A4254D2DF200DBDDFD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EBAB0DE53189A41F8141B7FF /* Pods-signChecker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2UYF727WAU;
-				INFOPLIST_FILE = signChecker/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/signChecker/resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -297,11 +394,12 @@
 		};
 		E60F71A5254D2DF200DBDDFD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EC0AE45B524C1F08A5161424 /* Pods-signChecker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2UYF727WAU;
-				INFOPLIST_FILE = signChecker/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/signChecker/resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
