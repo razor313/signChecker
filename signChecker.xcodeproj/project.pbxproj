@@ -14,6 +14,8 @@
 		E60F719C254D2DF200DBDDFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E60F719B254D2DF200DBDDFD /* Assets.xcassets */; };
 		E60F719F254D2DF200DBDDFD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E60F719D254D2DF200DBDDFD /* LaunchScreen.storyboard */; };
 		E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */; };
+		E60F71AE254D7E3300DBDDFD /* AssymetricCryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */; };
+		E6BE565D254DA2B800581B20 /* CryptoExportImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		E60F719E254D2DF200DBDDFD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E60F71A0254D2DF200DBDDFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Extension.swift"; sourceTree = "<group>"; };
+		E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssymetricCryptoManager.swift; sourceTree = "<group>"; };
+		E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptoExportImportManager.swift; sourceTree = "<group>"; };
 		EBAB0DE53189A41F8141B7FF /* Pods-signChecker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.debug.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.debug.xcconfig"; sourceTree = "<group>"; };
 		EC0AE45B524C1F08A5161424 /* Pods-signChecker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.release.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,6 +84,7 @@
 		E60F7191254D2DEF00DBDDFD /* signChecker */ = {
 			isa = PBXGroup;
 			children = (
+				E60F71AC254D7DF100DBDDFD /* business */,
 				E60F71A9254D7B1400DBDDFD /* view */,
 				E60F71A8254D7AFB00DBDDFD /* resources */,
 				E60F71A7254D7AEB00DBDDFD /* main */,
@@ -121,6 +126,15 @@
 				E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */,
 			);
 			path = view;
+			sourceTree = "<group>";
+		};
+		E60F71AC254D7DF100DBDDFD /* business */ = {
+			isa = PBXGroup;
+			children = (
+				E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */,
+				E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */,
+			);
+			path = business;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,7 +254,9 @@
 				E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */,
 				E60F7197254D2DEF00DBDDFD /* ViewController.swift in Sources */,
 				E60F7193254D2DEF00DBDDFD /* AppDelegate.swift in Sources */,
+				E6BE565D254DA2B800581B20 /* CryptoExportImportManager.swift in Sources */,
 				E60F7195254D2DEF00DBDDFD /* SceneDelegate.swift in Sources */,
+				E60F71AE254D7E3300DBDDFD /* AssymetricCryptoManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

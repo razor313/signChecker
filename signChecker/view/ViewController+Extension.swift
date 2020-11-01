@@ -32,6 +32,7 @@ extension ViewController {
         scrollView.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+            make.width.equalTo(scrollView)
         }
     }
     
@@ -69,6 +70,7 @@ extension ViewController {
         signatureLabel.snp.makeConstraints { make in
             make.trailing.leading.equalToSuperview()
             make.top.equalTo(verifyButton.snp.bottom).offset(MARGIN)
+            make.bottom.equalToSuperview()
         }
     }
 }
