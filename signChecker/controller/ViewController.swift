@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import LocalAuthentication
 
 class ViewController: UIViewController {
     
@@ -64,6 +65,14 @@ class ViewController: UIViewController {
     
     var signatureData: Data?
     
+    let context = LAContext()
+    
+    struct Helper {
+        static let signer: SignerHelper = {
+            return SignerHelper(config: Config(publicLabel: "ir.publicLabel1", privateLabel: "ir.privateLabel1", operationPrompt: "The biometric need authenticate", publicKeyAccessGroup: nil, privateKeyAccessGroup: nil, token: .secureEnclaveIfAvailable))
+        }()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if #available(iOS 13.0, *) {
@@ -77,9 +86,9 @@ class ViewController: UIViewController {
     }
     
     fileprivate func generateKeyPair() {
-        AsymmetricCryptoManager.sharedInstance.createSecureKeyPair { (flag, error) in
-            flag ? print("The key pair was generated successfully!!!") : print("The key pair wasn't generated successfully!!!")
-        }
+        guard let publicKey = Helper.signer.getPublicKey() else { return }
+        guard let publicKeyString = getData(publicKey: publicKey)?.base64EncodedString(options: []) else { return }
+        print(publicKeyString)
     }
     
     @objc func verifySign(_ sender: UIButton) {
@@ -90,6 +99,7 @@ class ViewController: UIViewController {
             print(key)
         }
         let inputData = textField.text?.data(using: .utf8)
+        
         AsymmetricCryptoManager.sharedInstance.verifySignaturePublicKey(inputData!, signatureData: signatureData!, completion: { (flag, error) in
             if flag {
                 print("The sign is correct!!!")
@@ -99,33 +109,20 @@ class ViewController: UIViewController {
         })
     }
     
-    
-    
     @objc func signData(_ sender: UIButton) {
         self.view.endEditing(true)
-        guard let plainMessage = textField.text else { return }
-        AsymmetricCryptoManager.sharedInstance.signMessageWithPrivateKey(plainMessage) { [weak self] (flag, data, error) in
-            guard let self = self else { return }
-            if flag {
-                if let base64 = data?.base64EncodedString() {
-                    print("the base64 encoding is: \(base64)")
-                    print("The base64 signature length is: \(base64.count)")
-                    self.signatureLabel.text = base64
-                }
-                var bytes = [UInt8](repeating:0, count:data!.count)
-                data!.copyBytes(to: &bytes, count: (data?.count)!)
-                let hexString = NSMutableString()
-                for byte in bytes {
-                    hexString.appendFormat("%02x", UInt(byte))
-                }
-                self.signatureData = data
-                let hexSt = hexString as String
-                print("The signature length is: \(hexSt.count)")
-                print("The signature: \(hexSt)")
-            } else {
-                self.signatureLabel.text = "Sign oprate doesn't work properly."
-            }
+        guard let plainMessage = textField.text, let messageData = plainMessage.data(using: .utf8) else { return }
+        let signatureData = Helper.signer.sign(messageData, localReason: "need for sign")
+        signatureLabel.text = signatureData?.base64EncodedString(options: [])
+    }
+    
+    private func getData(publicKey: SecKey) -> Data? {
+        var error : Unmanaged<CFError>?
+        guard let raw = SecKeyCopyExternalRepresentation(publicKey, &error) else {
+            print("message: Can't to tried reading public key bytes.")
+            return nil
         }
+        return raw as Data
     }
     
 }

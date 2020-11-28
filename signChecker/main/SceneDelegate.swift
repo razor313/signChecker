@@ -19,6 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let scene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: scene)
+//        AsymmetricCryptoManager.sharedInstance.deleteSecureKeyPair { flag in
+//            print(flag ? "keychain was cleared!!!" : "keychain wasn't cleared!!!")
+//        }
         let vc = ViewController()
         window?.rootViewController = vc
         window?.makeKeyAndVisible()

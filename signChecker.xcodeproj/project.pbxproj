@@ -15,7 +15,11 @@
 		E60F719F254D2DF200DBDDFD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E60F719D254D2DF200DBDDFD /* LaunchScreen.storyboard */; };
 		E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */; };
 		E60F71AE254D7E3300DBDDFD /* AssymetricCryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */; };
+		E62A71A4256A83FC00A604B5 /* SignerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A71A3256A83FC00A604B5 /* SignerHelper.swift */; };
+		E62A71A7256A8CBD00A604B5 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A71A6256A8CBD00A604B5 /* Device.swift */; };
+		E62A71F3256A9B5E00A604B5 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A71F2256A9B5E00A604B5 /* Config.swift */; };
 		E6BE565D254DA2B800581B20 /* CryptoExportImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */; };
+		E6C416F525592F9C00077125 /* SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C416F425592F9C00077125 /* SHA256.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +33,11 @@
 		E60F71A0254D2DF200DBDDFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E60F71AA254D7B4100DBDDFD /* ViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Extension.swift"; sourceTree = "<group>"; };
 		E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssymetricCryptoManager.swift; sourceTree = "<group>"; };
+		E62A71A3256A83FC00A604B5 /* SignerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignerHelper.swift; sourceTree = "<group>"; };
+		E62A71A6256A8CBD00A604B5 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		E62A71F2256A9B5E00A604B5 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptoExportImportManager.swift; sourceTree = "<group>"; };
+		E6C416F425592F9C00077125 /* SHA256.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SHA256.swift; sourceTree = "<group>"; };
 		EBAB0DE53189A41F8141B7FF /* Pods-signChecker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.debug.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.debug.xcconfig"; sourceTree = "<group>"; };
 		EC0AE45B524C1F08A5161424 /* Pods-signChecker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-signChecker.release.xcconfig"; path = "Target Support Files/Pods-signChecker/Pods-signChecker.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -84,6 +92,7 @@
 		E60F7191254D2DEF00DBDDFD /* signChecker */ = {
 			isa = PBXGroup;
 			children = (
+				E6C416F325592F8F00077125 /* utilites */,
 				E60F71AC254D7DF100DBDDFD /* business */,
 				E60F71A9254D7B1400DBDDFD /* view */,
 				E60F71A8254D7AFB00DBDDFD /* resources */,
@@ -133,8 +142,19 @@
 			children = (
 				E60F71AD254D7E3300DBDDFD /* AssymetricCryptoManager.swift */,
 				E6BE565C254DA2B800581B20 /* CryptoExportImportManager.swift */,
+				E62A71A3256A83FC00A604B5 /* SignerHelper.swift */,
 			);
 			path = business;
+			sourceTree = "<group>";
+		};
+		E6C416F325592F8F00077125 /* utilites */ = {
+			isa = PBXGroup;
+			children = (
+				E6C416F425592F9C00077125 /* SHA256.swift */,
+				E62A71A6256A8CBD00A604B5 /* Device.swift */,
+				E62A71F2256A9B5E00A604B5 /* Config.swift */,
+			);
+			path = utilites;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,9 +272,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E60F71AB254D7B4100DBDDFD /* ViewController+Extension.swift in Sources */,
+				E6C416F525592F9C00077125 /* SHA256.swift in Sources */,
 				E60F7197254D2DEF00DBDDFD /* ViewController.swift in Sources */,
+				E62A71A7256A8CBD00A604B5 /* Device.swift in Sources */,
 				E60F7193254D2DEF00DBDDFD /* AppDelegate.swift in Sources */,
 				E6BE565D254DA2B800581B20 /* CryptoExportImportManager.swift in Sources */,
+				E62A71A4256A83FC00A604B5 /* SignerHelper.swift in Sources */,
+				E62A71F3256A9B5E00A604B5 /* Config.swift in Sources */,
 				E60F7195254D2DEF00DBDDFD /* SceneDelegate.swift in Sources */,
 				E60F71AE254D7E3300DBDDFD /* AssymetricCryptoManager.swift in Sources */,
 			);
@@ -396,7 +420,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2UYF727WAU;
 				INFOPLIST_FILE = "$(SRCROOT)/signChecker/resources/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,13 +440,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2UYF727WAU;
 				INFOPLIST_FILE = "$(SRCROOT)/signChecker/resources/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ir.adanic.signChecker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

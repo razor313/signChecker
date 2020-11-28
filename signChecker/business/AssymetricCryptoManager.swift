@@ -10,15 +10,12 @@
 import Foundation
 import Security
 import CommonCrypto
-import KeychainSwift
-
-private var _singletonInstance: AsymmetricCryptoManager! = AsymmetricCryptoManager()
+import CryptoKit
 
 // Constants
 private let kAsymmetricCryptoManagerApplicationTag = "com.irazor.signChecker"
 private let kAsymmetricCryptoManagerCypheredBufferSize = 1024
 private let kAsymmetricCryptoManagerSecPadding: SecPadding = .PKCS1
-private let keychain = KeychainSwift(keyPrefix: kAsymmetricCryptoManagerApplicationTag)
 
 enum AsymmetricCryptoException: Error {
     case unknownError
@@ -36,59 +33,164 @@ enum AsymmetricCryptoException: Error {
     case outOfMemory
 }
 
-class AsymmetricCryptoManager: NSObject {
+final class AsymmetricCryptoManager {
     
     /** Shared instance */
-    class var sharedInstance: AsymmetricCryptoManager {
-        return _singletonInstance == nil ? AsymmetricCryptoManager() : _singletonInstance
+    static var sharedInstance: AsymmetricCryptoManager = AsymmetricCryptoManager()
+    
+    private init() {
+        if let (tempECCSignPrivateKey, tempECCSignPublicKey) = getECCSignKeysRef() {
+            eCCSignPrivateKey = tempECCSignPrivateKey
+            eCCSignPublicKey = tempECCSignPublicKey
+            eCCSignKeyExists = true
+            print("The key pair is existed!!!")
+            print("ECC keys", tempECCSignPublicKey, tempECCSignPrivateKey)
+        }
     }
     
-    func destroy() {
-        _singletonInstance = nil
-    }
+    let kSecMessECCKeyType = kSecAttrKeyTypeEC
+    let kSecMessECCKeySize = 256
+    let kSecMessECCSignLabel = "ECCLabelForSigning3"
+    private let kSecMessECCApplicationTag = "com.secmessecc.key"
+    private let kSecMessECCLabel = "notouch.secmessdecry.ecckey"
+    var eCCKeyExists = false
+    var eCCSignKeyExists = false
+    var eCCSignPrivateKey, eCCSignPublicKey: SecKey?
     
     // MARK: - Manage keys
     func createSecureKeyPair(_ completion: ((_ success: Bool, _ error: AsymmetricCryptoException?) -> Void)? = nil) {
+        
+        print("generate a key pair")
+        if eCCSignKeyExists {
+            completion?(true, nil)
+            return
+        }
         
         // global parameters for our key generation
         let parameters = getParameters()
         
         // asynchronously generate the key pair and call the completion block
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async { () -> Void in
-            var pubKey, privKey: SecKey?
-            let status = SecKeyGeneratePair(parameters as CFDictionary, &pubKey, &privKey)
+            guard let eCCPrivKey = SecKeyCreateRandomKey(parameters as CFDictionary, nil) else {
+                print("ECC KeyGen Error!")
+                DispatchQueue.main.async(execute: { completion?(false, AsymmetricCryptoException.unableToGenerateAccessControlWithGivenSecurity) })
+                return
+            }
+            guard let eCCPubKey = SecKeyCopyPublicKey(eCCPrivKey) else {
+                DispatchQueue.main.async(execute: { completion?(false, AsymmetricCryptoException.unableToGenerateAccessControlWithGivenSecurity) })
+                return
+            }
+            print("ECC keys", eCCPubKey, eCCPrivKey)
             
-            if status == errSecSuccess {
+            self.eCCSignPublicKey = eCCPubKey
+            self.eCCSignPrivateKey = eCCPrivKey
+            self.eCCKeyExists = true
+            //serialize b64 to share public key
+            let externalKey = SecKeyCopyExternalRepresentation(eCCPubKey, nil)
+            if let externalKeyData = externalKey as Data? {
+                let externalKeyB64String = externalKeyData.base64EncodedString(options: [])
+                print("ECC external key b64", externalKeyB64String)
                 DispatchQueue.main.async(execute: { completion?(true, nil) })
-            } else {
-                var error = AsymmetricCryptoException.unknownError
-                switch (status) {
-                case errSecDuplicateItem: error = .duplicateFoundWhileTryingToCreateKey
-                case errSecItemNotFound: error = .keyNotFound
-                case errSecAuthFailed: error = .authFailed
-                default: break
-                }
-                DispatchQueue.main.async(execute: { completion?(false, error) })
             }
         }
     }
     
+    func signECCPrivKey(message: String) -> String {
+        print("signing with private key")
+        guard let messageData = message.data(using: String.Encoding.utf8) else {
+            print("bad message to sign")
+            return ""
+        }
+        //finger print proteted SHA256 X 96
+        guard let signData = SecKeyCreateSignature(eCCSignPrivateKey!, SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256, messageData as CFData, nil) else {
+            print("priv ECC error signing")
+            return ""
+        }
+        
+        //convert signed to base64 string
+        let signedData = signData as Data
+        let signedString = signedData.base64EncodedString(options: [])
+        print("priv signed string", signedString)
+        return signedString
+    }
+    
     private func getParameters() -> [String : Any] {
         return [
-            kSecAttrKeyType as String: kSecAttrKeyTypeEC,
-            kSecAttrKeySizeInBits as String: 256,
-            kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,
-            kSecPublicKeyAttrs as String: getPublicParameter(),
-            kSecPrivateKeyAttrs as String: getPrivateParameters()
-        ]
+             kSecAttrTokenID as String:          kSecAttrTokenIDSecureEnclave,
+             kSecAttrKeyType as String:          kSecMessECCKeyType,
+             kSecAttrKeySizeInBits as String:    kSecMessECCKeySize as AnyObject,
+             kSecAttrLabel as String:            kSecMessECCSignLabel as AnyObject,
+             kSecPrivateKeyAttrs as String:      getPrivateParameters() as AnyObject
+         ]
     }
     
     // private key parameters
     private func getPrivateParameters() -> [String : Any] {
+        guard
+        let aclObject = SecAccessControlCreateWithFlags(
+            kCFAllocatorDefault,
+            kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+            [.privateKeyUsage, .touchIDAny],
+            nil
+            ) else {
+            print("could not create ACL error")
+            return [:]
+        }
         return [
-            kSecAttrIsPermanent as String: true,
-            kSecAttrApplicationTag as String: kAsymmetricCryptoManagerApplicationTag
+            kSecAttrAccessControl as String: aclObject as AnyObject, //protect with touch id
+            kSecAttrIsPermanent as String: true
         ]
+    }
+    
+    private func getECCPrivateKeyRef() -> SecKey? {
+            let parameters: [String: AnyObject] = [
+                kSecClass as String:                kSecClassKey,
+                kSecAttrKeyType as String:          kSecMessECCKeyType,
+                kSecAttrKeySizeInBits as String:    kSecMessECCKeySize as AnyObject,
+                kSecAttrLabel as String:            kSecMessECCLabel as AnyObject,
+                kSecReturnRef as String:            true as AnyObject,
+                kSecUseOperationPrompt as String:   "Authenticate to access keys" as AnyObject
+            ]
+            var eCCPrivKey: AnyObject?
+            let status = SecItemCopyMatching(parameters as CFDictionary, &eCCPrivKey)
+            if status != noErr {
+                print("ECC Priv KeyGet Error!", status)
+                return nil
+            }
+            print("found ECC priv key in keychain", eCCPrivKey as! SecKey)
+            return (eCCPrivKey as! SecKey)
+    }
+    
+    private func getECCSignKeysRef() -> (SecKey, SecKey)? {
+        guard let eCCPrivKey = getECCSignPrivateKeyRef() else {
+            print("ECC Pub Priv KeyGet Error")
+            return nil
+        }
+        guard let eCCPubKey = SecKeyCopyPublicKey(eCCPrivKey) else {
+            print("ECC Pub KeyGet Error")
+            return nil
+        }
+        print("found ECC pub key in keychain", eCCPubKey, eCCPrivKey)
+        return (eCCPrivKey, eCCPubKey)
+    }
+    
+    private func getECCSignPrivateKeyRef() -> SecKey? {
+        let parameters: [String: AnyObject] = [
+            kSecClass as String:                kSecClassKey,
+            kSecAttrKeyType as String:          kSecMessECCKeyType,
+            kSecAttrKeySizeInBits as String:    kSecMessECCKeySize as AnyObject,
+            kSecAttrLabel as String:            kSecMessECCSignLabel as AnyObject,
+            kSecReturnRef as String:            true as AnyObject,
+            kSecUseOperationPrompt as String:   "Authenticate to access keys" as AnyObject
+        ]
+        var eCCPrivKey: AnyObject?
+        let status = SecItemCopyMatching(parameters as CFDictionary, &eCCPrivKey)
+        if status != noErr {
+            print("ECC Priv KeyGet Error!", status)
+            return nil
+        }
+        print("found ECC priv key in keychain", eCCPrivKey as! SecKey)
+        return (eCCPrivKey as! SecKey)
     }
     
     // public key parameters
@@ -175,7 +277,7 @@ class AsymmetricCryptoManager: NSObject {
         // private query dictionary
         let deleteQuery = [
             kSecClass as String: kSecClassKey,
-            kSecAttrApplicationTag as String: kAsymmetricCryptoManagerApplicationTag,
+            kSecAttrLabel as String: kSecMessECCSignLabel as AnyObject,
             ] as [String : Any]
         
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async { () -> Void in
@@ -341,7 +443,7 @@ class AsymmetricCryptoManager: NSObject {
     private func signMessageWithPrivateKeyEC(_ message: String, completion: @escaping (_ success: Bool, _ data: Data?, _ error: AsymmetricCryptoException?) -> Void) {
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async { () -> Void in
             
-            if let privateKeyRef = self.getPrivateECKeyReference() {
+            if let privateKeyRef = self.getECCSignPrivateKeyRef() {
                 let blockSize = 256
                 var error: AsymmetricCryptoException? = nil
                 var signatureBytes = [UInt8](repeating: 0, count: blockSize)
@@ -356,11 +458,14 @@ class AsymmetricCryptoManager: NSObject {
                     CC_SHA256((plainData as NSData).bytes.bindMemory(to: Void.self, capacity: plainData.count), CC_LONG(plainData.count), hash)
                     
                     // sign the hash
-                    let status = SecKeyRawSign(privateKeyRef, SecPadding.PKCS1SHA256, hash, hashData.count, &signatureBytes, &signatureLength)
-                    if status != errSecSuccess {
+//                    let status = SecKeyRawSign(privateKeyRef, SecPadding.PKCS1SHA256, hash, hashData.count, &signatureBytes, &signatureLength)
+                    let status = SecKeyCreateSignature(privateKeyRef, .ecdsaSignatureMessageX962SHA256, plainData as CFData, nil)
+                    if status == nil {
                         error = .unableToEncrypt
                     } else {
-                        
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            completion(true, status! as Data, nil)
+                        })
                     }
                 } else {
                     error = .wrongInputDataFormat
@@ -409,7 +514,74 @@ class AsymmetricCryptoManager: NSObject {
         }
     }
     
+    /*
+    func getPrivateParameterForECCKey() -> [String : AnyObject]? {
+        guard
+        let aclObject = SecAccessControlCreateWithFlags(
+            kCFAllocatorDefault,
+            kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+            [.privateKeyUsage, .touchIDAny],
+            nil
+            ) else {
+            print("could not create ACL error")
+            return nil
+        }
+                
+        // private key parameters
+        let privateKeyParams: [String: AnyObject] = [
+            kSecAttrAccessControl as String:    aclObject as AnyObject, //protect with touch id
+            kSecAttrIsPermanent as String:      true as AnyObject,
+        ]
+        return privateKeyParams
+    }
     
+    func getGlobalParameterForECCKey() -> [String : AnyObject]? {
+        guard let privateKeyParams = getPrivateParameterForECCKey() else { return nil }
+        let parameters: [String: AnyObject] = [
+            kSecAttrTokenID as String:          kSecAttrTokenIDSecureEnclave,
+            kSecAttrKeyType as String:          kSecMessECCKeyType,
+            kSecAttrKeySizeInBits as String:    kSecMessECCKeySize as AnyObject,
+            kSecAttrLabel as String:            kSecMessECCSignLabel as AnyObject,
+            kSecPrivateKeyAttrs as String:      privateKeyParams as AnyObject
+        ]
+        return parameters
+    }
+    
+    func createECCKeyPair() -> (SecKey?, SecKey?) {
+        guard let parameters = getGlobalParameterForECCKey() else { return (nil, nil) }
+        guard
+        let eCCPrivKey = SecKeyCreateRandomKey(parameters as CFDictionary, nil) else {
+            print("ECC KeyGen Error!")
+            return (nil, nil)
+        }
+
+        guard
+        let eCCPubKey = SecKeyCopyPublicKey(eCCPrivKey) else {
+            print("ECC Pub KeyGen Error")
+            return (nil, nil)
+        }
+        return (publicKey: eCCPubKey, privateKey: eCCPrivKey)
+    }
+    
+    func signWithECCKeyMessage(_ message: String) {
+        let (_, privateKey) = createECCKeyPair()
+        guard let messageData = message.data(using: String.Encoding.utf8) else {
+            print("bad message to sign")
+            return
+        }
+        guard
+        let signData = SecKeyCreateSignature(
+                       privateKey!,
+                       SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256,
+                       messageData as CFData, nil) else {
+            print("priv ECC error signing")
+            return
+        }
+        let signedData = signData as Data
+        let signature = signedData.base64EncodedString()
+        print("priv signed string", signature)
+    }
+ */
 }
 
 
