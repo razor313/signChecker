@@ -28,6 +28,8 @@ public struct Config {
     // Useful for shared keychain items
     public var privateKeyAccessGroup: String?
     
+    // The access control used to manage the access to the private key
+    public var privateKeyAccessControl: SecAccessControl?
     
     // Should it be stored on .secureEnclave or in .keychain ?
     public var token: Token
@@ -37,12 +39,14 @@ public struct Config {
                 operationPrompt: String?,
                 publicKeyAccessGroup: String? = nil,
                 privateKeyAccessGroup: String? = nil,
+                privateKeyAccessControl: SecAccessControl? = nil,
                 token: Token) {
         self.publicLabel = publicLabel
         self.privateLabel = privateLabel
         self.operationPrompt = operationPrompt
         self.publicKeyAccessGroup = publicKeyAccessGroup
         self.privateKeyAccessGroup = privateKeyAccessGroup
+        self.privateKeyAccessControl = privateKeyAccessControl
         self.token = token
     }
 }

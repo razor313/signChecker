@@ -90,18 +90,9 @@ class SignerHelper {
         }
         
         // On iOS 11 and lower: access control with empty flags doesn't work
-        guard
-        let aclObject = SecAccessControlCreateWithFlags(
-            kCFAllocatorDefault,
-            kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-            [.privateKeyUsage, .userPresence],
-            nil
-            ) else {
-            print("could not create ACL error")
-            return [:]
+        if let aclObject = config.privateKeyAccessControl {
+            privateKeyParams[kSecAttrAccessControl as String] = aclObject
         }
-        privateKeyParams[kSecAttrAccessControl as String] = aclObject
-        
         /* ========= public ========= */
         var publicKeyParams: [String: Any] = [
             kSecAttrLabel as String: config.publicLabel,
@@ -239,26 +230,29 @@ class SignerHelper {
         }
         print("[INFO] message: Could delete private key. \(query)")
     }
-    /*
-    public func signUsingSha256(_ digest: Data, context: LAContext? = nil) -> Data? {
-        
-        let privateKey = getPrivateKey(localReason: context?.localizedReason)
-        let digestToSign = digest.sha256()
-        
-        var digestToSignBytes = [UInt8](repeating: 0, count: digestToSign.count)
-        digestToSign.copyBytes(to: &digestToSignBytes, count: digestToSign.count)
-        
-        var signatureBytes = [UInt8](repeating: 0, count: 128)
-        var signatureLength = 128
-        
-        let signErr = SecKeyRawSign(privateKey!, .PKCS1, &digestToSignBytes, digestToSignBytes.count, &signatureBytes, &signatureLength)
-        guard signErr == errSecSuccess else {
-            print("message: Could not create signature.")
-            return nil
-        }
-        
-        let signature = Data(bytes: &signatureBytes, count: signatureLength)
-        return signature
+    
+    public func getPEM(_ publicKeyData: Data) -> String {
+        var pem = String()
+        pem.append("-----BEGIN PUBLIC KEY-----\n")
+        pem.append(publicKeyData.base64EncodedString(options: [.lineLength64Characters, .endLineWithCarriageReturn]))
+        pem.append("\n-----END PUBLIC KEY-----")
+        return pem
     }
- */
+    
+    public func verifyUsingSha256(signature: Data, digest: Data, publicKey: SecKey) -> Bool {
+        let flag: Bool = false
+        let sha = digest.sha256()
+        var shaBytes = [UInt8](repeating: 0, count: sha.count)
+        sha.copyBytes(to: &shaBytes, count: sha.count)
+        
+        var signatureBytes = [UInt8](repeating: 0, count: signature.count)
+        signature.copyBytes(to: &signatureBytes, count: signature.count)
+        
+        let status = SecKeyRawVerify(publicKey, .PKCS1, &shaBytes, shaBytes.count, &signatureBytes, signatureBytes.count)
+        guard status == errSecSuccess else {
+            print("message: Could not verify signature.")
+            return true
+        }
+        return flag
+    }
 }

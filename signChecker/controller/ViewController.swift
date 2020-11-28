@@ -8,9 +8,18 @@
 
 import UIKit
 import SnapKit
-import LocalAuthentication
 
 class ViewController: UIViewController {
+    
+    lazy var publiKeyTextView: UITextView = {
+        let view = UITextView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.textAlignment = .justified
+        view.isScrollEnabled = false
+        view.isEditable = false
+        view.isSelectable = false
+        return view
+    }()
     
     lazy var textField: UITextField = {
         let textField = UITextField()
@@ -65,11 +74,11 @@ class ViewController: UIViewController {
     
     var signatureData: Data?
     
-    let context = LAContext()
-    
     struct Helper {
         static let signer: SignerHelper = {
-            return SignerHelper(config: Config(publicLabel: "ir.publicLabel1", privateLabel: "ir.privateLabel1", operationPrompt: "The biometric need authenticate", publicKeyAccessGroup: nil, privateKeyAccessGroup: nil, token: .secureEnclaveIfAvailable))
+            let flags: SecAccessControlCreateFlags  = [.privateKeyUsage, .userPresence]
+            let aclObject = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, flags, nil)
+            return SignerHelper(config: Config(publicLabel: "ir.publicLabel1", privateLabel: "ir.privateLabel1", operationPrompt: "The biometric need authenticate", publicKeyAccessGroup: nil, privateKeyAccessGroup: nil,privateKeyAccessControl: aclObject, token: .secureEnclaveIfAvailable))
         }()
     }
     
@@ -80,39 +89,32 @@ class ViewController: UIViewController {
         } else {
             self.view.backgroundColor = .white
         }
+        // Do any additional setup after loading the view.
         setupViews()
         generateKeyPair()
-        // Do any additional setup after loading the view.
     }
     
     fileprivate func generateKeyPair() {
         guard let publicKey = Helper.signer.getPublicKey() else { return }
-        guard let publicKeyString = getData(publicKey: publicKey)?.base64EncodedString(options: []) else { return }
-        print(publicKeyString)
+        guard let publicKeyString = getData(publicKey: publicKey) else { return }
+        publiKeyTextView.text = Helper.signer.getPEM(publicKeyString)
     }
     
     @objc func verifySign(_ sender: UIButton) {
         self.view.endEditing(true)
-        guard let publicKey = AsymmetricCryptoManager.sharedInstance.getSt() as Data? else { return }
-        let exportImportManager = CryptoExportImportManager()
-        if let key = exportImportManager.exportPublicKeyToPEM(publicKey as Data, keyType: kSecAttrKeyTypeEC as String, keySize: 256) {
-            print(key)
+        guard let publicKey = Helper.signer.getPublicKey(), let signature = signatureData, let digest = textField.text?.data(using: .utf8) else { return }
+        guard Helper.signer.verifyUsingSha256(signature: signature, digest: digest, publicKey: publicKey) else {
+            print("signature was verified successfully!!")
+            return
         }
-        let inputData = textField.text?.data(using: .utf8)
-        
-        AsymmetricCryptoManager.sharedInstance.verifySignaturePublicKey(inputData!, signatureData: signatureData!, completion: { (flag, error) in
-            if flag {
-                print("The sign is correct!!!")
-            } else {
-                print("The sign isn't correct!!!")
-            }
-        })
+        print("signature wasn't verified successfully!!")
     }
     
     @objc func signData(_ sender: UIButton) {
         self.view.endEditing(true)
         guard let plainMessage = textField.text, let messageData = plainMessage.data(using: .utf8) else { return }
-        let signatureData = Helper.signer.sign(messageData, localReason: "need for sign")
+        let signatureData = Helper.signer.sign(messageData)
+        self.signatureData = signatureData
         signatureLabel.text = signatureData?.base64EncodedString(options: [])
     }
     

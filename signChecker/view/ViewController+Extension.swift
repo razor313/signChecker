@@ -15,6 +15,7 @@ extension ViewController {
     func setupViews() {
         setupScrollView()
         setupContainerView()
+        setupTextView()
         setupTextField()
         setupSignButton()
         setupVerifyButton()
@@ -36,10 +37,20 @@ extension ViewController {
         }
     }
     
+    fileprivate func setupTextView() {
+        containerView.addSubview(publiKeyTextView)
+        publiKeyTextView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(MARGIN)
+            make.height.greaterThanOrEqualTo(MARGIN)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
+        }
+    }
+    
     fileprivate func setupTextField() {
         containerView.addSubview(textField)
         textField.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(MARGIN)
+            make.top.equalTo(publiKeyTextView.snp.bottom).offset(MARGIN)
             make.height.equalTo(MARGIN)
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.5)
